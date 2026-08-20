@@ -128,6 +128,7 @@ section{padding:38px 0;border-bottom:1px solid var(--line)}
   display:flex;align-items:center;justify-content:center;overflow:hidden}
 .ph img{width:100%;height:100%;object-fit:cover}
 .ph i{font-style:normal;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.media-link{display:block}
 .it .cap{font-size:13px;font-weight:500;margin-top:8px}
 .it .sc{font-size:11.5px;color:var(--soft);margin-top:1px}
 
