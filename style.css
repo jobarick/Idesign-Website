@@ -1,0 +1,225 @@
+/* ============================================================
+   IDESIGN GROUP — stylesheet
+   Monochrome. Six neutral tones, no colour.
+   ============================================================ */
+
+/* ---- TT FORS ----------------------------------------------
+   Licensed webfont (TypeType). Buy the WEB licence, drop the
+   .woff2 files into fonts/, then delete the comment
+   markers around the two @font-face rules below.
+   Until then the wordmark falls back to Outfit.
+------------------------------------------------------------- */
+/*
+@font-face{
+  font-family:'TT Fors';
+  src:url('fonts/TTFors-Bold.woff2') format('woff2');
+  font-weight:700; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'TT Fors';
+  src:url('fonts/TTFors-Regular.woff2') format('woff2');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+*/
+
+:root{
+  --ink:#111110;
+  --mid:#403D39;
+  --soft:#6B675F;
+  --line:#E3E0DA;
+  --paper:#FBFAF8;
+  --fill:#F0EEE9;
+  --wm:'TT Fors','Outfit',system-ui,sans-serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --max:1080px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);background:var(--paper);color:var(--ink);
+  line-height:1.5;font-weight:300;-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block;height:auto}
+button{font:inherit}
+
+.wordmark{font-family:var(--wm);font-weight:700;letter-spacing:-.02em;line-height:1}
+
+/* skip link — accessibility */
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--paper);
+  padding:10px 16px;font-size:13px;z-index:200}
+.skip:focus{left:0}
+
+/* ---------- HEADER ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:56px;gap:20px}
+.nav .mk{font-family:var(--wm);font-weight:700;font-size:16px;letter-spacing:.01em;white-space:nowrap}
+.nav .rt{display:flex;align-items:center;gap:20px}
+.nav .rt a{font-size:12px;color:var(--mid)}
+.nav .rt a:hover{color:var(--ink)}
+.back{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.back:hover{color:var(--ink)}
+.lang{display:flex;gap:7px}
+.lang button{background:none;border:none;font-family:var(--sans);font-size:11px;
+  letter-spacing:.08em;cursor:pointer;color:var(--soft);padding:0}
+.lang button.on{color:var(--ink)}
+.lang button:hover{color:var(--ink)}
+
+/* ---------- LANDING INDEX ---------- */
+.top{padding:22px 0 30px}
+.top .big{font-family:var(--wm);font-weight:700;font-size:clamp(42px,8vw,88px);
+  letter-spacing:-.035em;line-height:.9}
+.lockup{display:inline-block}
+.top .sub{display:flex;justify-content:space-between;width:100%;
+  font-size:clamp(11px,1.45vw,15px);font-weight:700;text-transform:uppercase;
+  color:var(--ink);margin-top:10px;letter-spacing:0;line-height:1}
+.top .sub .sp{flex:0 0 .34em}
+
+.index{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px 1fr auto;gap:22px;align-items:baseline;
+  padding:18px 0;border-bottom:1px solid var(--line);transition:padding .25s}
+.row:hover,.row:focus-visible{padding-left:14px;outline:none}
+.row .n{font-size:11px;color:var(--soft);letter-spacing:.08em}
+.row .nm{font-family:var(--wm);font-weight:700;font-size:clamp(21px,2.8vw,30px);
+  letter-spacing:-.02em;line-height:1.15}
+.row .ds{font-size:12.5px;font-weight:500;color:var(--ink);margin-top:4px;letter-spacing:.005em}
+.row .ar{font-size:15px;color:var(--soft);transition:.25s}
+.row:hover .ar,.row:focus-visible .ar{color:var(--ink);transform:translateX(5px)}
+
+.tail{padding:26px 0 40px;display:flex;justify-content:space-between;gap:26px 40px;
+  flex-wrap:wrap;align-items:flex-end}
+.tail>div{flex:1 1 30rem;min-width:0}
+.tail .lead{font-size:16px;font-weight:500;color:var(--ink);max-width:62ch;
+  line-height:1.45;letter-spacing:-.008em}
+.tail .sub2{font-size:12.5px;font-weight:400;color:var(--soft);margin-top:5px}
+.tail a{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  border-bottom:1px solid var(--ink);padding-bottom:4px;white-space:nowrap}
+.tail a:hover{color:var(--soft);border-color:var(--soft)}
+
+/* ---------- BRANCH PAGES ---------- */
+.bh{padding:26px 0 32px;border-bottom:1px solid var(--line)}
+.own{font-size:12px;font-weight:500;letter-spacing:.02em;
+  color:var(--soft);margin-bottom:18px}
+.bh .nm{font-family:var(--wm);font-weight:700;font-size:clamp(32px,5.4vw,56px);
+  letter-spacing:-.03em;line-height:1}
+.bh .ds{font-size:14px;font-weight:600;letter-spacing:.005em;
+  color:var(--ink);margin-top:12px}
+.bh .tg{font-size:clamp(17px,2.2vw,21px);margin-top:16px;max-width:30ch;
+  font-weight:400;line-height:1.35}
+.bh .ld{font-size:14.5px;font-weight:400;color:var(--mid);max-width:52ch;margin-top:12px}
+
+section{padding:38px 0;border-bottom:1px solid var(--line)}
+.lbl{font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink);margin-bottom:16px}
+
+.lst{list-style:none}
+.lst li{padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:baseline}
+.lst li .t{color:var(--ink);font-size:14.5px}
+.lst li .m{font-size:12.5px;color:var(--soft);text-align:right}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:16px}
+.ph{aspect-ratio:4/3;background:var(--fill);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph i{font-style:normal;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.it .cap{font-size:13px;font-weight:500;margin-top:8px}
+.it .sc{font-size:11.5px;color:var(--soft);margin-top:1px}
+
+.txt{max-width:56ch;font-size:14.5px;font-weight:400;color:var(--mid);line-height:1.6}
+.txt p{margin-bottom:9px}
+.txt p:last-child{margin-bottom:0}
+
+.cta{padding:32px 0;border-bottom:1px solid var(--line)}
+.cta a{font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+  border-bottom:1px solid var(--ink);padding-bottom:4px}
+.cta a:hover{color:var(--mid);border-color:var(--mid)}
+
+/* ---------- CONTACT ---------- */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+.fd{margin-bottom:12px}
+.fd label{display:block;font-size:10.5px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+.fd input,.fd select,.fd textarea{width:100%;padding:7px 0;border:none;
+  border-bottom:1px solid var(--line);background:none;font-family:var(--sans);
+  font-size:14.5px;font-weight:400;color:var(--ink);border-radius:0}
+.fd input:focus,.fd select:focus,.fd textarea:focus{outline:none;border-color:var(--ink)}
+.fd textarea{resize:vertical}
+.sub{margin-top:18px;background:none;border:none;border-bottom:1px solid var(--ink);
+  padding:0 0 4px;font-family:var(--sans);font-size:12.5px;letter-spacing:.09em;
+  text-transform:uppercase;cursor:pointer;color:var(--ink)}
+.sub:hover{color:var(--soft);border-color:var(--soft)}
+.hp{position:absolute;left:-9999px}      /* honeypot — spam trap */
+/* ---------- TAP TO CALL ----------
+   Large touch targets. tel: dials directly on a phone;
+   wa.me opens WhatsApp. Both fall back to plain links on desktop. */
+.call{border-top:1px solid var(--ink);margin-bottom:22px}
+.call-row{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 0;border-bottom:1px solid var(--line)}
+.call-row .who{font-size:10.5px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--soft);margin-bottom:5px}
+.call-row .num{font-family:var(--wm);font-weight:700;font-size:clamp(19px,2.4vw,24px);
+  letter-spacing:-.01em;color:var(--ink);display:block;line-height:1.1}
+.call-row a.num:hover{color:var(--mid)}
+.call-acts{display:flex;gap:8px;flex-shrink:0}
+.call-acts a{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--line);padding:8px 13px;white-space:nowrap;color:var(--mid);
+  transition:.2s;min-height:38px;display:inline-flex;align-items:center}
+.call-acts a:hover{border-color:var(--ink);color:var(--ink)}
+.call-acts a.pri{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.call-acts a.pri:hover{background:transparent;color:var(--ink)}
+@media(max-width:520px){
+  .call-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .call-acts{width:100%}
+  .call-acts a{flex:1;justify-content:center}
+}
+
+.ci{padding:11px 0;border-bottom:1px solid var(--line)}
+.ci b{font-weight:500;font-size:13.5px;display:block}
+.ci span{font-size:12.5px;color:var(--soft)}
+.ci a:hover{color:var(--ink)}
+
+/* ---------- FOOTER ---------- */
+footer{padding:24px 0 34px;font-size:11.5px;color:var(--soft)}
+.fr{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.fr a:hover{color:var(--ink)}
+
+.note{border-left:1px solid var(--line);padding:0 0 0 14px;font-size:11.5px;
+  line-height:1.55;color:var(--soft);margin-top:18px;max-width:60ch}
+
+/* ---------- RESPONSIVE ---------- */
+/* The strapline is stretched flush to the wordmark on desktop. On a
+   narrow screen a 30-character line cannot fit that width, so it
+   falls back to normal tracked text that wraps. */
+@media(max-width:700px){
+  .top .sub{flex-wrap:wrap;justify-content:flex-start;font-size:10px;
+    letter-spacing:.09em;line-height:1.5}
+  .top .sub .sp{flex:0 0 .5em}
+}
+
+@media(max-width:820px){
+  .cg{grid-template-columns:1fr;gap:26px}
+  .wrap{padding:0 22px}
+  .row{grid-template-columns:24px 1fr auto;gap:14px}
+  section{padding:28px 0}
+  .bh{padding:18px 0 24px}
+  .top{padding:16px 0 22px}
+  .nav .rt{gap:14px}
+}
+
+/* ---------- PRINT ---------- */
+@media print{
+  header,.cta,.lang,.back{display:none}
+  body{background:#fff}
+  section,.bh{border:none;padding:14px 0}
+}
+
+/* ---------- MOTION ---------- */
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
