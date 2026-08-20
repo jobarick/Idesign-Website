@@ -85,9 +85,9 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
   padding:18px 0;border-bottom:1px solid var(--line);transition:padding .25s}
 .row:hover,.row:focus-visible{padding-left:14px;outline:none}
 .row .n{font-size:11px;color:var(--soft);letter-spacing:.08em}
-.row .nm{font-family:var(--wm);font-weight:700;font-size:clamp(21px,2.8vw,30px);
+.row .nm{display:block;font-family:var(--wm);font-weight:700;font-size:clamp(21px,2.8vw,30px);
   letter-spacing:-.02em;line-height:1.15}
-.row .ds{font-size:12.5px;font-weight:500;color:var(--ink);margin-top:4px;letter-spacing:.005em}
+.row .ds{display:block;font-size:12.5px;font-weight:500;color:var(--ink);margin-top:4px;letter-spacing:.005em}
 .row .ar{font-size:15px;color:var(--soft);transition:.25s}
 .row:hover .ar,.row:focus-visible .ar{color:var(--ink);transform:translateX(5px)}
 
