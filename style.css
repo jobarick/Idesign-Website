@@ -33,6 +33,7 @@
   --line:#E3E0DA;     /* hairlines                     */
   --paper:#FBFAF8;    /* page                          */
   --fill:#F0EEE9;     /* image wells                   */
+  --on-ink:#A8A49C;   /* secondary text on ink — 4.9:1 */
 
   /* ---------- TYPEFACES ---------- */
   --wm:'TT Fors','Outfit',system-ui,sans-serif;
@@ -237,6 +238,38 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .it .cap{font-size:var(--fs-meta);font-weight:500;margin-top:var(--s3)}
 .it .sc{font-size:var(--fs-caption);color:var(--soft);margin-top:var(--s1)}
 
+/* ---------- PROCESS STEPS ----------
+   A five-across band at desktop, each step opening under its own
+   rule. Below 900px it folds into a numbered list rather than a
+   narrow grid, so no step is ever left orphaned in a part row. */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s5)}
+.step{border-top:1px solid var(--ink);padding-top:var(--s3)}
+.step .k{display:block;font-family:var(--wm);font-weight:700;
+  font-size:var(--fs-meta);color:var(--soft);letter-spacing:.08em}
+.step .h{display:block;font-family:var(--wm);font-weight:700;
+  font-size:var(--fs-lead);letter-spacing:var(--tr-row);
+  line-height:var(--lh-tight);margin-top:var(--s4)}
+.step .p{display:block;font-size:var(--fs-caption);color:var(--soft);
+  line-height:var(--lh-body);margin-top:var(--s2)}
+.steps-end{font-size:var(--fs-meta);color:var(--soft);margin-top:var(--s5)}
+
+/* ---------- YOUTUBE PANEL ----------
+   The one inverted block on the site. Watching the films is the
+   page's primary action, so it gets the only tonal shift in the
+   palette rather than a decorative treatment. */
+.tube{display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s5);background:var(--ink);color:var(--paper);
+  padding:var(--s6);margin-top:var(--s5)}
+.tube .th{display:block;font-family:var(--wm);font-weight:700;
+  font-size:var(--fs-row);letter-spacing:var(--tr-row);line-height:var(--lh-tight)}
+.tube .ta{display:block;font-size:var(--fs-caption);color:var(--on-ink);
+  letter-spacing:.06em;margin-top:var(--s2)}
+.tube .tgo{font-size:var(--fs-row);line-height:1;flex:none;
+  transition:transform var(--dur) var(--ease)}
+.tube:hover .tgo{transform:translateX(5px)}
+/* The global focus ring is ink, which would vanish on this panel. */
+.tube:focus-visible{outline-color:var(--paper);outline-offset:-6px}
+
 .txt{max-width:56ch;font-size:var(--fs-body);font-weight:400;
   color:var(--mid);line-height:var(--lh-body)}
 .txt p{margin-bottom:var(--s4)}
@@ -313,6 +346,14 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
   .cg{grid-template-columns:1fr;gap:var(--s7)}
   .row{grid-template-columns:var(--s5) 1fr auto;gap:var(--s4)}
   .grid,.grid--wide{grid-template-columns:repeat(2,1fr);gap:var(--s4)}
+  /* Steps fold into a numbered list — never a part-filled grid. */
+  .steps{grid-template-columns:1fr;gap:0}
+  .step{display:grid;grid-template-columns:var(--s6) 1fr;gap:var(--s4);
+    border-top:none;border-bottom:var(--hair);padding:var(--s4) 0;
+    align-items:baseline}
+  .step:first-child{border-top:1px solid var(--ink)}
+  .step .h{margin-top:0}
+  .tube{padding:var(--s5);gap:var(--s4)}
   .bh{padding:var(--s6) 0}
   .top{padding:var(--s6) 0 var(--s5)}
   .tail{padding:var(--s6) 0 var(--s7)}
@@ -331,8 +372,9 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
 @media(max-width:560px){
   /* The wordmark already links home, so the separate "Home" link is
      a second link to the same destination. Drop it here to buy back
-     header width instead of letting the nav overflow. */
-  .back{display:none}
+     header width instead of letting the nav overflow.
+     Selector must outrank `.nav .rt a`, hence the full path. */
+  .nav .rt .back{display:none}
   .nav{gap:var(--s3)}
   .nav .rt{gap:var(--s3)}
   /* Narrower but still a compliant target: 32x44 clears the 24x24
