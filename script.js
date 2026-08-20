@@ -49,7 +49,7 @@
      remainder. Re-runs on language change since Swahili is a
      different length. */
   function fitSub(l) {
-    var s = document.querySelector('.top .sub');
+    var s = document.querySelector('.top .strap');
     if (!s) return;
     var t = s.getAttribute('data-' + l);
     if (!t) t = s.getAttribute('data-plain') || s.textContent;
