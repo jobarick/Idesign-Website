@@ -73,13 +73,22 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-/* Best-effort throttle. Serverless instances are recycled, so this
-   bounds a burst against one warm instance rather than enforcing a
-   global limit. It is a speed bump for casual abuse; the honeypot
-   and validation do the real work. */
+/* Best-effort throttle, scoped per warm instance rather than a
+   true global limit - Vercel recycles instances, so this is a
+   speed bump against a single abusive script, not a hard cap.
+
+   RATE_MAX was originally 5 per 10 minutes and it broke real
+   submissions: routine verification testing (repeated department
+   checks from one source) exhausted the bucket and produced
+   genuine 429s indistinguishable, to a visitor, from a real
+   failure. Many visitors in Tanzania also sit behind carrier-grade
+   NAT, so several unrelated people can share one public IP and
+   the same bucket. 20 per 15 minutes still stops a naive flood
+   without that failure mode; the honeypot and field validation do
+   the real defensive work. */
 const RATE = new Map();
-const RATE_MAX = 5;
-const RATE_WINDOW_MS = 10 * 60 * 1000;
+const RATE_MAX = 20;
+const RATE_WINDOW_MS = 15 * 60 * 1000;
 
 function rateLimited(ip) {
   const now = Date.now();
