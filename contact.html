@@ -42,13 +42,15 @@
   <p class="ld" data-en="Each company takes its own enquiries." data-sw="Kila kampuni inapokea maswali yake.">Each company takes its own enquiries.</p>
 </div></div>
 <section><div class="wrap cg">
-  <form name="enquiry" method="POST" data-netlify="true" netlify-honeypot="company-website" action="/thanks.html">
-    <input type="hidden" name="form-name" value="enquiry">
+  <form id="enquiry" method="POST" action="/api/contact" novalidate>
     <p class="hp"><label>Do not fill this in <input name="company-website" tabindex="-1" autocomplete="off"></label></p>
     <div class="fd"><label for="f-co" data-en="Which company" data-sw="Kampuni ipi">Which company</label>
-      <select id="f-co" name="company">
-        <option>IDESIGN Landscape</option><option>IDESIGN CGI</option><option>IDESIGN Lifestyle</option>
-        <option>IDEFENDA LAB</option><option>Badili Bongo</option>
+      <select id="f-co" name="department" required>
+        <option value="landscape">IDESIGN Landscape</option>
+        <option value="cgi">IDESIGN CGI</option>
+        <option value="lifestyle">IDESIGN Lifestyle</option>
+        <option value="lab">IDEFENDA LAB</option>
+        <option value="badili">Badili Bongo</option>
       </select></div>
     <div class="fd"><label for="f-nm" data-en="Name" data-sw="Jina">Name</label>
       <input id="f-nm" name="name" type="text" autocomplete="name" required></div>
@@ -64,8 +66,9 @@
         <option data-en="International" data-sw="Kimataifa">International</option>
       </select></div>
     <div class="fd"><label for="f-ms" data-en="Message" data-sw="Ujumbe">Message</label>
-      <textarea id="f-ms" name="message" rows="4"></textarea></div>
+      <textarea id="f-ms" name="message" rows="4" required></textarea></div>
     <button class="btn" type="submit" data-en="Send" data-sw="Tuma">Send</button>
+    <p id="f-status" class="fstat" role="status" aria-live="polite"></p>
   </form>
   <div>
     <div class="call">

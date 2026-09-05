@@ -84,3 +84,88 @@
     boot();
   }
 })();
+
+/* ============================================================
+   Contact form
+   Submits as JSON to /api/contact so the page never reloads.
+   The department is sent as a KEY; the server owns the address.
+   Nothing secret is referenced here - this file is public.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var form = document.getElementById('enquiry');
+  if (!form) return;
+
+  var status = document.getElementById('f-status');
+  var button = form.querySelector('button[type="submit"]');
+
+  var TEXT = {
+    sending: { en: 'Sending...', sw: 'Inatuma...' },
+    ok:      { en: 'Your message has been sent successfully.',
+               sw: 'Ujumbe wako umetumwa kikamilifu.' },
+    fail:    { en: 'We could not send your message. Please try again.',
+               sw: 'Hatukuweza kutuma ujumbe wako. Tafadhali jaribu tena.' },
+    invalid: { en: 'Please fill in your name, a valid email, and a message.',
+               sw: 'Tafadhali jaza jina lako, barua pepe sahihi, na ujumbe.' }
+  };
+
+  function lang() {
+    try { return localStorage.getItem('idesign-lang') === 'sw' ? 'sw' : 'en'; }
+    catch (e) { return 'en'; }
+  }
+
+  function say(kind) {
+    if (!status) return;
+    status.textContent = TEXT[kind][lang()];
+    status.setAttribute('data-state', kind);
+  }
+
+  function value(name) {
+    var el = form.elements[name];
+    return el && el.value ? el.value.trim() : '';
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+
+    var payload = {
+      department: value('department'),
+      name: value('name'),
+      email: value('email'),
+      phone: value('phone'),
+      location: value('location'),
+      message: value('message')
+    };
+    payload['company-website'] = value('company-website');
+
+    if (!payload.name || !payload.message || payload.email.indexOf('@') < 1) {
+      say('invalid');
+      return;
+    }
+
+    if (button) button.disabled = true;
+    say('sending');
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json().catch(function () { return { ok: r.ok }; });
+    }).then(function (data) {
+      if (data && data.ok) {
+        say('ok');
+        form.reset();
+      } else {
+        /* Deliberately generic. The server never returns a reason
+           and the visitor is never shown one. */
+        say('fail');
+      }
+    }).catch(function () {
+      say('fail');
+    }).then(function () {
+      if (button) button.disabled = false;
+    });
+  });
+})();

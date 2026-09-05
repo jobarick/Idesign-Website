@@ -290,7 +290,15 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
   outline:none;border-bottom-color:var(--ink);box-shadow:0 1px 0 0 var(--ink)}
 .fd textarea{resize:vertical;line-height:var(--lh-body)}
 .btn{margin-top:var(--s5)}
-.hp{position:absolute;left:-9999px}      /* honeypot — spam trap */
+.hp{position:absolute;left:-9999px}      /* honeypot - spam trap */
+
+/* Contact form result. One line, in the existing type scale;
+   colour only shifts between quiet and ink so the monochrome
+   palette is untouched. */
+.fstat{margin-top:var(--s4);font-size:var(--fs-meta);color:var(--soft);min-height:1.4em}
+.fstat[data-state="ok"]{color:var(--ink)}
+.fstat[data-state="fail"],.fstat[data-state="invalid"]{color:var(--ink)}
+.btn[disabled]{opacity:.45;cursor:default}
 
 /* ---------- TAP TO CALL ----------
    Large touch targets. tel: dials directly on a phone;

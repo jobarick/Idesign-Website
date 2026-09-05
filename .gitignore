@@ -1,0 +1,11 @@
+# never commit secrets or local env files
+.env
+.env.*
+!.env.example
+
+# vercel local
+.vercel/
+
+# os noise
+.DS_Store
+Thumbs.db
