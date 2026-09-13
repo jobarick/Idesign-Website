@@ -275,6 +275,12 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .txt p{margin-bottom:var(--s4)}
 .txt p:last-child{margin-bottom:0}
 
+/* Client names as a credit line, not a sentence: bold, uppercase via
+   CSS (never typed in caps - see the branding fix), each name its
+   own item so the gap reads as space, not punctuation. */
+.worked{display:flex;flex-wrap:wrap;gap:var(--s4) var(--s6);margin-top:var(--s2)}
+.worked span{font-weight:700;text-transform:uppercase;color:var(--ink)}
+
 .cta{padding:var(--s7) 0;border-bottom:var(--hair)}
 
 /* ---------- CONTACT ---------- */
