@@ -257,22 +257,23 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
   line-height:var(--lh-body);margin-top:var(--s2)}
 .steps-end{font-size:var(--fs-meta);color:var(--soft);margin-top:var(--s5)}
 
-/* ---------- YOUTUBE PANEL ----------
-   The one inverted block on the site. Watching the films is the
-   page's primary action, so it gets the only tonal shift in the
-   palette rather than a decorative treatment. */
-.tube{display:flex;align-items:center;justify-content:space-between;
+/* ---------- INVERTED LINK PANEL ----------
+   The only tonal shift in the palette, reserved for a page's single
+   most important outbound link rather than used as decoration.
+   .tube: Badili Bongo's YouTube channel. .panel: each branch's
+   Google Business profile (find us on the map, see real photos). */
+.tube,.panel{display:flex;align-items:center;justify-content:space-between;
   gap:var(--s5);background:var(--ink);color:var(--paper);
   padding:var(--s6);margin-top:var(--s5)}
-.tube .th{display:block;font-family:var(--wm);font-weight:700;
+.tube .th,.panel .th{display:block;font-family:var(--wm);font-weight:700;
   font-size:var(--fs-row);letter-spacing:var(--tr-row);line-height:var(--lh-tight)}
-.tube .ta{display:block;font-size:var(--fs-caption);color:var(--on-ink);
+.tube .ta,.panel .ta{display:block;font-size:var(--fs-caption);color:var(--on-ink);
   letter-spacing:.06em;margin-top:var(--s2)}
-.tube .tgo{font-size:var(--fs-row);line-height:1;flex:none;
+.tube .tgo,.panel .tgo{font-size:var(--fs-row);line-height:1;flex:none;
   transition:transform var(--dur) var(--ease)}
-.tube:hover .tgo{transform:translateX(5px)}
+.tube:hover .tgo,.panel:hover .tgo{transform:translateX(5px)}
 /* The global focus ring is ink, which would vanish on this panel. */
-.tube:focus-visible{outline-color:var(--paper);outline-offset:-6px}
+.tube:focus-visible,.panel:focus-visible{outline-color:var(--paper);outline-offset:-6px}
 
 .txt{max-width:56ch;font-size:var(--fs-body);font-weight:400;
   color:var(--mid);line-height:var(--lh-body)}
