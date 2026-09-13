@@ -102,7 +102,11 @@ button{font:inherit}
   outline:2px solid var(--ink);outline-offset:3px;
 }
 
-.wordmark{font-family:var(--wm);font-weight:700;
+/* Uppercase via CSS, not by typing brand names in caps in the HTML
+   (see the branding-case fix) - this is what makes every wordmark
+   instance, including the header logo and each division's own h1,
+   match the visual weight IDEFENDA LAB already had. */
+.wordmark{font-family:var(--wm);font-weight:700;text-transform:uppercase;
   letter-spacing:var(--tr-row);line-height:1}
 
 /* Shared label treatment — eyebrows, section headings, tags. */
@@ -140,7 +144,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
 .nav{display:flex;align-items:center;justify-content:space-between;
   height:var(--header-h);gap:var(--s5)}
 .nav .mk{font-family:var(--wm);font-weight:700;font-size:var(--fs-body);
-  letter-spacing:.01em;white-space:nowrap;
+  letter-spacing:.01em;white-space:nowrap;text-transform:uppercase;
   display:inline-flex;align-items:center;min-height:var(--tap)}
 .nav .rt{display:flex;align-items:center;gap:var(--s5)}
 
@@ -355,6 +359,12 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
   color:var(--soft);margin-top:auto;flex:none}
 .fr{display:flex;justify-content:space-between;gap:var(--s4);flex-wrap:wrap;
   align-items:center}
+/* The copyright line is always the credit's first child, sitewide -
+   capitalised via CSS rather than editing all 10 footers by hand. */
+.fr>div:first-child{text-transform:uppercase;letter-spacing:.02em}
+/* Same treatment as the footer credit, for the one other place the
+   legal name appears prominently outside the wordmark system. */
+.credit{text-transform:uppercase;letter-spacing:.02em}
 /* Standalone links, so they owe the 24px minimum target (WCAG 2.5.8). */
 .fr a{display:inline-flex;align-items:center;min-height:24px;
   transition:color var(--dur) var(--ease)}
@@ -385,6 +395,7 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
   .top{padding:var(--s6) 0 var(--s5)}
   .tail{padding:var(--s6) 0 var(--s7)}
   .nav .rt{gap:var(--s4)}
+  .worked span{font-size:var(--fs-caption)}
 }
 
 /* The strapline is stretched flush to the wordmark on desktop. On a
@@ -417,6 +428,22 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
   .lst li{grid-template-columns:1fr;gap:var(--s1)}
   .lst li .m{text-align:left}
   .tail{align-items:flex-start}
+  /* Three long client names per row won't fit 320-430px at any
+     legible size, so each row scrolls sideways instead of wrapping
+     to a third line. Keeps the block at a fixed two lines. */
+  .worked-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .worked-row::-webkit-scrollbar{display:none}
+  .worked span{flex:none;font-size:var(--fs-label)}
+}
+
+/* Mobile landscape: short viewport height regardless of width, so
+   target it directly rather than by width breakpoint. Same fix as
+   the ≤560px portrait case, needed here too since landscape widths
+   (667-926px) sit above that breakpoint. */
+@media(max-height:500px) and (orientation:landscape){
+  .worked-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .worked-row::-webkit-scrollbar{display:none}
+  .worked span{flex:none;font-size:var(--fs-caption)}
 }
 
 /* ---------- PRINT ---------- */
