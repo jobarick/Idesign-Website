@@ -190,7 +190,11 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
   transition:color var(--dur) var(--ease),transform var(--dur) var(--ease)}
 .row:hover .ar,.row:focus-visible .ar{color:var(--ink);transform:translateX(5px)}
 
-.tail{padding:var(--s7) 0 var(--s8);display:flex;justify-content:space-between;
+/* Bottom padding is deliberately small: .tail is homepage-only and
+   is immediately followed by the "Worked with" section, which
+   already carries its own top padding via the global `section`
+   rule. A full --s8 here on top of that stacked into a 112px gap. */
+.tail{padding:var(--s7) 0 var(--s4);display:flex;justify-content:space-between;
   gap:var(--s5) var(--s7);flex-wrap:wrap;align-items:flex-end}
 .tail>div{flex:1 1 30rem;min-width:0}
 .tail .lead{font-size:var(--fs-lead);font-weight:400;color:var(--ink);
