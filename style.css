@@ -117,7 +117,7 @@ button{font:inherit}
 
 /* Shared action treatment. Every CTA on the site is this one
    component; it was previously three near-identical variants. */
-.tail a,.cta a,.btn{
+.tail a,.cta a,.btn,.follow a{
   display:inline-block;font-family:var(--sans);
   font-size:var(--fs-caption);font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;color:var(--ink);
@@ -128,9 +128,13 @@ button{font:inherit}
 /* Only the index CTA is short enough to guarantee one line; the
    branch CTAs run to 45 characters and must be free to wrap. */
 .tail a{white-space:nowrap}
-.tail a:hover,.cta a:hover,.btn:hover{
+.tail a:hover,.cta a:hover,.btn:hover,.follow a:hover{
   color:var(--soft);border-color:var(--soft);
 }
+/* A secondary, subtle outbound link (e.g. Instagram) - one step
+   quieter than .panel, which stays reserved for a page's single
+   most important outbound link. */
+.follow{margin-top:var(--s5)}
 
 /* skip link — accessibility */
 .skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--paper);
