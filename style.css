@@ -320,6 +320,18 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .btn{margin-top:var(--s5)}
 .hp{position:absolute;left:-9999px}      /* honeypot - spam trap */
 
+/* Preset-amount picker (Badili Bongo support page). Same hairline,
+   sharp-corner language as everything else - a bordered toggle,
+   not a filled "primary" button, so it doesn't invent a new
+   component just for this one form. */
+.amounts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.amt{font-family:var(--sans);font-size:var(--fs-meta);font-weight:600;
+  color:var(--ink);background:none;border:var(--hair);border-radius:var(--radius);
+  padding:var(--s2) var(--s4);min-height:var(--tap);cursor:pointer;
+  transition:background-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+.amt:hover{border-color:var(--ink)}
+.amt.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
 /* Contact form result. One line, in the existing type scale;
    colour only shifts between quiet and ink so the monochrome
    palette is untouched. */

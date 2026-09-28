@@ -169,3 +169,98 @@
     });
   });
 })();
+
+/* ============================================================
+   Badili Bongo contribution form (support.html)
+   Preset amount buttons fill the amount field; submitting asks
+   /api/create-contribution for a ClickPesa checkout link and
+   redirects the browser there. Same status-message pattern as
+   the enquiry form above.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var form = document.getElementById('contribute');
+  if (!form) return;
+
+  var status = document.getElementById('c-status');
+  var button = form.querySelector('button[type="submit"]');
+  var amountField = document.getElementById('c-amount');
+  var presets = form.querySelectorAll('.amt');
+
+  var TEXT = {
+    sending: { en: 'Preparing payment...', sw: 'Inaandaa malipo...' },
+    fail:    { en: 'We could not start the payment. Please try again.',
+               sw: 'Hatukuweza kuanzisha malipo. Tafadhali jaribu tena.' },
+    invalid: { en: 'Please enter an amount of at least 1,000 TZS.',
+               sw: 'Tafadhali weka kiasi cha angalau TZS 1,000.' }
+  };
+
+  function lang() {
+    try { return localStorage.getItem('idesign-lang') === 'sw' ? 'sw' : 'en'; }
+    catch (e) { return 'en'; }
+  }
+
+  function say(kind) {
+    if (!status) return;
+    status.textContent = TEXT[kind][lang()];
+    status.setAttribute('data-state', kind);
+  }
+
+  function value(name) {
+    var el = form.elements[name];
+    return el && el.value ? el.value.trim() : '';
+  }
+
+  for (var i = 0; i < presets.length; i++) {
+    presets[i].addEventListener('click', function () {
+      for (var j = 0; j < presets.length; j++) presets[j].classList.remove('on');
+      this.classList.add('on');
+      if (amountField) amountField.value = this.getAttribute('data-amount');
+    });
+  }
+
+  if (amountField) {
+    amountField.addEventListener('input', function () {
+      for (var k = 0; k < presets.length; k++) presets[k].classList.remove('on');
+    });
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+
+    var payload = {
+      amount: value('amount'),
+      name: value('name'),
+      email: value('email')
+    };
+    payload['company-website'] = value('company-website');
+
+    var amount = Number(payload.amount);
+    if (!amount || amount < 1000) {
+      say('invalid');
+      return;
+    }
+
+    if (button) button.disabled = true;
+    say('sending');
+
+    fetch('/api/create-contribution', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json().catch(function () { return { ok: r.ok }; });
+    }).then(function (data) {
+      if (data && data.ok && data.checkoutLink) {
+        window.location.href = data.checkoutLink;
+      } else {
+        say('fail');
+        if (button) button.disabled = false;
+      }
+    }).catch(function () {
+      say('fail');
+      if (button) button.disabled = false;
+    });
+  });
+})();
