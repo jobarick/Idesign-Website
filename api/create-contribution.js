@@ -89,7 +89,14 @@ module.exports = async function handler(req, res) {
   const clientId = process.env.CLICKPESA_CLIENT_ID;
   const apiKey = process.env.CLICKPESA_API_KEY;
   if (!clientId || !apiKey) {
-    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY not set');
+    /* TEMPORARY DIAGNOSTIC - server-side log only, never returned in the
+       HTTP response. Presence/length only, never the actual value.
+       Remove once the env var visibility issue is resolved. */
+    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY not set. ' +
+      'hasClientId=' + !!clientId + ' hasApiKey=' + !!apiKey +
+      ' clientIdLen=' + (clientId ? clientId.length : 0) +
+      ' apiKeyLen=' + (apiKey ? apiKey.length : 0) +
+      ' vercelEnv=' + (process.env.VERCEL_ENV || 'unknown'));
     return res.status(500).json({ ok: false });
   }
 
