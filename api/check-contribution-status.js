@@ -143,8 +143,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, status: 'PENDING' });
     }
     if (!queryResp.ok) {
-      console.error('check-contribution-status: query ' + queryResp.status);
-      return res.status(502).json({ ok: false });
+      const detail = await queryResp.text().catch(function () { return ''; });
+      console.error('check-contribution-status: query ' + queryResp.status + ' ' + detail.slice(0, 400));
+      /* TEMPORARY DIAGNOSTIC - relays the upstream HTTP status only
+         (no secrets, no token, no key) so this can be checked directly
+         instead of another log round-trip. Remove once diagnosed. */
+      return res.status(502).json({ ok: false, debugUpstreamStatus: queryResp.status });
     }
     const data = await queryResp.json();
     const payment = Array.isArray(data) ? data[0] : data;
