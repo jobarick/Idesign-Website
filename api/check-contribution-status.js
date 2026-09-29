@@ -139,16 +139,18 @@ module.exports = async function handler(req, res) {
     const queryResp = await fetch(QUERY_URL + encodeURIComponent(ref), {
       headers: { 'Authorization': authHeader }
     });
-    if (queryResp.status === 404) {
+    /* Docs say 404 means "payment not found"; live testing shows
+       ClickPesa actually returns 400 for a reference with no
+       matching payment yet (e.g. checked before initiate-ussd-push-
+       request's response even lands). Treat both as "nothing to
+       report yet" rather than an error. */
+    if (queryResp.status === 404 || queryResp.status === 400) {
       return res.status(200).json({ ok: true, status: 'PENDING' });
     }
     if (!queryResp.ok) {
       const detail = await queryResp.text().catch(function () { return ''; });
       console.error('check-contribution-status: query ' + queryResp.status + ' ' + detail.slice(0, 400));
-      /* TEMPORARY DIAGNOSTIC - relays the upstream HTTP status only
-         (no secrets, no token, no key) so this can be checked directly
-         instead of another log round-trip. Remove once diagnosed. */
-      return res.status(502).json({ ok: false, debugUpstreamStatus: queryResp.status });
+      return res.status(502).json({ ok: false });
     }
     const data = await queryResp.json();
     const payment = Array.isArray(data) ? data[0] : data;
