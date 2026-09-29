@@ -94,6 +94,10 @@
         <input id="c-amount" name="amount" type="number" min="1000" step="500" inputmode="numeric" required>
       </div>
       <div class="fd">
+        <label for="c-phone" data-en="Phone number (for the mobile money prompt)" data-sw="Namba ya simu (kwa ombi la pesa ya simu)">Phone number (for the mobile money prompt)</label>
+        <input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" required>
+      </div>
+      <div class="fd">
         <label for="c-name" data-en="Name (optional)" data-sw="Jina (hiari)">Name (optional)</label>
         <input id="c-name" name="name" type="text" autocomplete="name">
       </div>
@@ -101,9 +105,9 @@
         <label for="c-email" data-en="Email (optional, for a receipt)" data-sw="Barua pepe (hiari, kwa risiti)">Email (optional, for a receipt)</label>
         <input id="c-email" name="email" type="email" autocomplete="email">
       </div>
-      <button class="btn" type="submit" data-en="Continue to payment" data-sw="Endelea na malipo">Continue to payment</button>
+      <button class="btn" type="submit" data-en="Send payment request" data-sw="Tuma ombi la malipo">Send payment request</button>
       <p id="c-status" class="fstat" role="status" aria-live="polite"></p>
-      <p class="note" data-en="Payment is handled by ClickPesa, licensed under the Bank of Tanzania. Idesign never sees or stores your card, wallet or mobile money details." data-sw="Malipo yanashughulikiwa na ClickPesa, iliyosajiliwa chini ya Benki Kuu ya Tanzania. Idesign haioni wala kuhifadhi taarifa za kadi, pochi au pesa ya simu yako.">Payment is handled by ClickPesa, licensed under the Bank of Tanzania. Idesign never sees or stores your card, wallet or mobile money details.</p>
+      <p class="note" data-en="Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it." data-sw="Malipo yanashughulikiwa na ClickPesa, iliyosajiliwa chini ya Benki Kuu ya Tanzania. Ombi litafika kwenye simu yako kuweka PIN yako ya pesa ya simu. Idesign haioni wala kuihifadhi.">Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it.</p>
     </form>
   </div>
   <div>

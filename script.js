@@ -171,11 +171,13 @@
 })();
 
 /* ============================================================
-   Badili Bongo contribution form (support.html)
-   Preset amount buttons fill the amount field; submitting asks
-   /api/create-contribution for a ClickPesa checkout link and
-   redirects the browser there. Same status-message pattern as
-   the enquiry form above.
+   Badili Bongo contribution form (badili-bongo.html, support.html)
+   Preset amount buttons fill the amount field. Submitting sends a
+   ClickPesa USSD-PUSH request straight to the phone number entered -
+   nothing here redirects anywhere. The visitor stays on this page
+   and enters their mobile money PIN on their own phone; this script
+   polls /api/check-contribution-status until it sees a result and
+   shows it inline.
    ============================================================ */
 (function () {
   'use strict';
@@ -188,12 +190,20 @@
   var amountField = document.getElementById('c-amount');
   var presets = form.querySelectorAll('.amt');
 
+  var POLL_INTERVAL_MS = 3000;
+  var POLL_MAX_ATTEMPTS = 30; /* ~90s before backing off */
+  var pollTimer = null;
+  var pollsLeft = 0;
+  var pendingRef = null;
+
   var TEXT = {
-    sending: { en: 'Preparing payment...', sw: 'Inaandaa malipo...' },
-    fail:    { en: 'We could not start the payment. Please try again.',
-               sw: 'Hatukuweza kuanzisha malipo. Tafadhali jaribu tena.' },
-    invalid: { en: 'Please enter an amount of at least 1,000 TZS.',
-               sw: 'Tafadhali weka kiasi cha angalau TZS 1,000.' }
+    sending: { en: 'Sending a payment request to your phone...', sw: 'Inatuma ombi la malipo kwenye simu yako...' },
+    waiting: { en: 'Check your phone. Enter your mobile money PIN to confirm.', sw: 'Angalia simu yako. Weka PIN yako ya pesa ya simu kuthibitisha.' },
+    paid:    { en: 'Thank you. Your contribution has been received.', sw: 'Asante. Mchango wako umepokelewa.' },
+    failed:  { en: 'The payment did not go through. Please try again.', sw: 'Malipo hayakufanikiwa. Tafadhali jaribu tena.' },
+    timeout: { en: 'Still waiting to hear back. If you already entered your PIN, give it a moment and check again.', sw: 'Bado tunasubiri jibu. Kama tayari umeweka PIN yako, subiri kidogo kisha angalia tena.' },
+    fail:    { en: 'We could not send the payment request. Please try again.', sw: 'Hatukuweza kutuma ombi la malipo. Tafadhali jaribu tena.' },
+    invalid: { en: 'Please enter an amount of at least 1,000 TZS and a valid phone number.', sw: 'Tafadhali weka kiasi cha angalau TZS 1,000 na namba sahihi ya simu.' }
   };
 
   function lang() {
@@ -212,6 +222,52 @@
     return el && el.value ? el.value.trim() : '';
   }
 
+  function stopPolling() {
+    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+    pendingRef = null;
+  }
+
+  function checkStatus() {
+    fetch('/api/check-contribution-status?ref=' + encodeURIComponent(pendingRef), {
+      method: 'GET'
+    }).then(function (r) {
+      return r.json().catch(function () { return { ok: false }; });
+    }).then(function (data) {
+      var s = data && data.ok ? data.status : null;
+      if (s === 'SUCCESS' || s === 'SETTLED') {
+        say('paid');
+        stopPolling();
+        if (button) button.disabled = false;
+        form.reset();
+        for (var j = 0; j < presets.length; j++) presets[j].classList.remove('on');
+        return;
+      }
+      if (s === 'FAILED') {
+        say('failed');
+        stopPolling();
+        if (button) button.disabled = false;
+        return;
+      }
+      pollsLeft -= 1;
+      if (pollsLeft <= 0) {
+        say('timeout');
+        stopPolling();
+        if (button) button.disabled = false;
+        return;
+      }
+      pollTimer = setTimeout(checkStatus, POLL_INTERVAL_MS);
+    }).catch(function () {
+      pollsLeft -= 1;
+      if (pollsLeft <= 0) {
+        say('timeout');
+        stopPolling();
+        if (button) button.disabled = false;
+        return;
+      }
+      pollTimer = setTimeout(checkStatus, POLL_INTERVAL_MS);
+    });
+  }
+
   for (var i = 0; i < presets.length; i++) {
     presets[i].addEventListener('click', function () {
       for (var j = 0; j < presets.length; j++) presets[j].classList.remove('on');
@@ -228,16 +284,19 @@
 
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
+    stopPolling();
 
     var payload = {
       amount: value('amount'),
+      phone: value('phone'),
       name: value('name'),
       email: value('email')
     };
     payload['company-website'] = value('company-website');
 
     var amount = Number(payload.amount);
-    if (!amount || amount < 1000) {
+    var phoneDigits = payload.phone.replace(/[^\d]/g, '');
+    if (!amount || amount < 1000 || phoneDigits.length < 9) {
       say('invalid');
       return;
     }
@@ -245,15 +304,18 @@
     if (button) button.disabled = true;
     say('sending');
 
-    fetch('/api/create-contribution', {
+    fetch('/api/initiate-mobile-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     }).then(function (r) {
       return r.json().catch(function () { return { ok: r.ok }; });
     }).then(function (data) {
-      if (data && data.ok && data.checkoutLink) {
-        window.location.href = data.checkoutLink;
+      if (data && data.ok && data.orderReference) {
+        pendingRef = data.orderReference;
+        pollsLeft = POLL_MAX_ATTEMPTS;
+        say('waiting');
+        pollTimer = setTimeout(checkStatus, POLL_INTERVAL_MS);
       } else {
         say('fail');
         if (button) button.disabled = false;

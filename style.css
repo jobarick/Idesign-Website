@@ -336,8 +336,8 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
    colour only shifts between quiet and ink so the monochrome
    palette is untouched. */
 .fstat{margin-top:var(--s4);font-size:var(--fs-meta);color:var(--soft);min-height:1.4em}
-.fstat[data-state="ok"]{color:var(--ink)}
-.fstat[data-state="fail"],.fstat[data-state="invalid"]{color:var(--ink)}
+.fstat[data-state="ok"],.fstat[data-state="paid"]{color:var(--ink)}
+.fstat[data-state="fail"],.fstat[data-state="invalid"],.fstat[data-state="failed"]{color:var(--ink)}
 .btn[disabled]{opacity:.45;cursor:default}
 
 /* ---------- TAP TO CALL ----------
