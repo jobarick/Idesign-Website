@@ -89,14 +89,7 @@ module.exports = async function handler(req, res) {
   const clientId = process.env.CLICKPESA_CLIENT_ID;
   const apiKey = process.env.CLICKPESA_API_KEY;
   if (!clientId || !apiKey) {
-    /* TEMPORARY DIAGNOSTIC - server-side log only, never returned in the
-       HTTP response. Presence/length only, never the actual value.
-       Remove once the env var visibility issue is resolved. */
-    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY not set. ' +
-      'hasClientId=' + !!clientId + ' hasApiKey=' + !!apiKey +
-      ' clientIdLen=' + (clientId ? clientId.length : 0) +
-      ' apiKeyLen=' + (apiKey ? apiKey.length : 0) +
-      ' vercelEnv=' + (process.env.VERCEL_ENV || 'unknown'));
+    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY not set');
     return res.status(500).json({ ok: false });
   }
 
@@ -133,11 +126,15 @@ module.exports = async function handler(req, res) {
       return res.status(502).json({ ok: false });
     }
     const tokenData = await tokenResp.json();
-    const token = tokenData && tokenData.token;
-    if (!token) {
+    const rawToken = tokenData && tokenData.token;
+    if (!rawToken) {
       console.error('create-contribution: token response carried no token');
       return res.status(502).json({ ok: false });
     }
+    /* ClickPesa's generate-token response already includes the "Bearer "
+       prefix in the token field itself (per docs.clickpesa.com), so the
+       Authorization header must use it as-is, not "Bearer " + token. */
+    const authHeader = rawToken.indexOf('Bearer ') === 0 ? rawToken : 'Bearer ' + rawToken;
 
     const checkoutBody = {
       totalPrice: totalPrice,
@@ -152,7 +149,7 @@ module.exports = async function handler(req, res) {
     const checkoutResp = await fetch(CHECKOUT_URL, {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + token,
+        'Authorization': authHeader,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(checkoutBody)
