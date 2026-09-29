@@ -9,8 +9,9 @@
    enter their mobile money PIN arrives on their own phone.
 
    CLICKPESA_CLIENT_ID, CLICKPESA_API_KEY and CLICKPESA_CHECKSUM_KEY
-   are the same three secrets api/create-contribution.js uses - same
-   ClickPesa Application, a different endpoint on it.
+   are read from the environment and never leave the server, for the
+   same reason RESEND_API_KEY doesn't in api/contact.js: every file
+   under the site root is publicly downloadable.
 
    ClickPesa specifics (verified against docs.clickpesa.com,
    September 2026 - confirm against current docs before relying on
@@ -23,17 +24,15 @@
        small real amounts.
      - orderReference must be alphanumeric and 20 characters or
        fewer - this file's orderReference() produces 16.
-     - checksum is documented as optional on this endpoint too, but
-       the checkout-link endpoint's docs said the same thing and it
-       turned out to be required in practice - sent unconditionally
-       here to avoid repeating that discovery.
-     - This endpoint's request body has no callbackUrl field, unlike
-       checkout-link's. The frontend confirms status by polling
+     - checksum is documented as optional on this endpoint, but a
+       reference with no checksum was rejected in practice - sent
+       unconditionally to be safe.
+     - This endpoint's request body has no callbackUrl field. The
+       frontend confirms status by polling
        api/check-contribution-status.js. The admin notification email
-       comes separately from api/clickpesa-webhook.js, once a
-       merchant-level webhook is registered in the ClickPesa dashboard
-       (Settings > Developers > Webhooks) - that covers USSD-PUSH
-       payments too, not just Hosted Checkout.
+       comes separately from api/clickpesa-webhook.js, via a
+       merchant-level webhook registered in the ClickPesa dashboard
+       (Settings > Developers > Webhooks).
    ============================================================ */
 
 'use strict';
@@ -60,7 +59,9 @@ function checksumFor(checksumKey, payload) {
   return hmac.digest('hex');
 }
 
-/* Same guardrails as create-contribution.js. */
+/* Round-number guardrails, not a claim about what's "right" to give.
+   MIN stops accidental near-zero submissions; MAX stops a typo (or
+   an abuse attempt) from pushing to an implausible amount. */
 const MIN_TZS = 1000;
 const MAX_TZS = 5000000;
 
@@ -86,8 +87,7 @@ function normalizePhone(raw) {
   return digits;
 }
 
-/* Same best-effort per-IP throttle as api/contact.js and
-   api/create-contribution.js. */
+/* Same best-effort per-IP throttle as api/contact.js. */
 const RATE = new Map();
 const RATE_MAX = 20;
 const RATE_WINDOW_MS = 15 * 60 * 1000;
@@ -102,10 +102,9 @@ function rateLimited(ip) {
   return hits.length > RATE_MAX;
 }
 
-/* Same "BB" + timestamp + random shape as create-contribution.js,
-   16 characters - under the 20-character limit this endpoint
-   enforces. check-contribution-status.js relies on this exact shape
-   to recognise a reference as one of ours. */
+/* "BB" + timestamp + random, 16 characters - under the 20-character
+   limit this endpoint enforces. check-contribution-status.js relies
+   on this exact shape to recognise a reference as one of ours. */
 function orderReference() {
   const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
   return 'BB' + Date.now().toString(36).toUpperCase() + rand;

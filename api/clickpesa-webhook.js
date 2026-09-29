@@ -3,19 +3,17 @@
    Vercel Serverless Function.  POST /api/clickpesa-webhook
 
    ClickPesa calls this after a contribution succeeds or fails
-   (PAYMENT RECEIVED / PAYMENT FAILED), for both Hosted Checkout and
-   USSD-PUSH payments alike once registered as a merchant-level
-   webhook. It is the single reliable confirmation path - a visitor's
-   own browser session can be closed, lost, or never return, so
-   nothing here depends on that happening.
+   (PAYMENT RECEIVED / PAYMENT FAILED) for USSD-PUSH payments
+   (api/initiate-mobile-payment.js) via a merchant-level webhook. It
+   is the single reliable confirmation path - a visitor's own browser
+   session can be closed, lost, or never return, so nothing here
+   depends on that happening.
 
-   Register this exact URL in the ClickPesa dashboard under
-   Settings > Developers > Webhooks: https://idesign.co.tz/api/clickpesa-webhook
-   That registration is what was actually missing - a payment settled
-   on 2026-09-29 (reference BBMUMK5DKSZA705F) without this ever being
-   called, because no webhook was registered there. The per-request
-   callbackUrl on the Hosted Checkout flow (api/create-contribution.js)
-   is not a substitute for this.
+   Registered in the ClickPesa dashboard under Settings > Developers
+   > Webhooks: https://idesign.co.tz/api/clickpesa-webhook
+   That registration is what was actually missing at first - a
+   payment settled on 2026-09-29 (reference BBMUMK5DKSZA705F) without
+   this ever being called, because no webhook was registered there.
 
    PAYLOAD SHAPE - corrected against docs.clickpesa.com/home/webhooks,
    September 2026. The event type and every payment field are nested

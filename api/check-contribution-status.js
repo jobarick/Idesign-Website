@@ -8,14 +8,13 @@
 
    This endpoint only relays status back to the browser - it does not
    send the admin notification email. That happens once, centrally,
-   from api/clickpesa-webhook.js, which a merchant-level webhook
+   from api/clickpesa-webhook.js, via a merchant-level webhook
    registered in the ClickPesa dashboard (Settings > Developers >
-   Webhooks, pointed at https://idesign.co.tz/api/clickpesa-webhook)
-   fires for both this payment method and Hosted Checkout alike. This
-   file used to also send that email, which meant a payment observed
-   by both the webhook and a poll here could double-notify; the fix
-   was to make the webhook the single source of truth for that, not
-   to fix the duplication here.
+   Webhooks, pointed at https://idesign.co.tz/api/clickpesa-webhook).
+   This file used to also send that email, which meant a payment
+   observed by both the webhook and a poll here could double-notify;
+   the fix was to make the webhook the single source of truth for
+   that, not to fix the duplication here.
    ============================================================ */
 
 'use strict';
