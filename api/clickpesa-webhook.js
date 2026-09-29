@@ -43,6 +43,14 @@
    to avoid a duplicate email when both this webhook and that polling
    endpoint observe the same successful payment.
 
+   De-duplicated per orderReference below, because ClickPesa can call
+   this more than once for one payment: SUCCESS and a later SETTLED
+   are separate events per their payment-status docs, and a slow or
+   erroring response here causes a genuine retry of the same event.
+   Best-effort, per serverless instance - there is no database, so
+   this is the honest ceiling on "exactly once" here, same as the
+   rate limiters elsewhere in this project.
+
    RESEND_API_KEY is reused from api/contact.js - no new secret needed.
    ============================================================ */
 
@@ -50,6 +58,17 @@
 
 const INBOX = 'jobarick@gmail.com';
 const OWN_REFERENCE_RE = /^BB[0-9A-Z]{6,}$/;
+
+const NOTIFIED = new Set();
+function alreadyNotified(ref) {
+  if (NOTIFIED.has(ref)) return true;
+  NOTIFIED.add(ref);
+  if (NOTIFIED.size > 500) {
+    const first = NOTIFIED.values().next().value;
+    NOTIFIED.delete(first);
+  }
+  return false;
+}
 
 function escapeHtml(value) {
   return String(value == null ? '' : value)
@@ -140,10 +159,12 @@ module.exports = async function handler(req, res) {
   console.log('clickpesa-webhook: received event=' + event + ' status=' + status + ' ref=' + ref);
 
   if (status.indexOf('SUCCESS') !== -1 || status.indexOf('RECEIVED') !== -1 || status === 'SETTLED') {
-    if (OWN_REFERENCE_RE.test(ref)) {
-      await notifyAdmin(data);
-    } else {
+    if (!OWN_REFERENCE_RE.test(ref)) {
       console.error('clickpesa-webhook: PAYMENT RECEIVED with an unrecognised reference, not notifying: ' + ref);
+    } else if (alreadyNotified(ref)) {
+      console.log('clickpesa-webhook: already notified for ref=' + ref + ', skipping duplicate email');
+    } else {
+      await notifyAdmin(data);
     }
   } else if (status.indexOf('FAIL') !== -1) {
     console.log('clickpesa-webhook: payment failed ref=' + ref + ' reason=' + (data.message || 'unspecified'));
