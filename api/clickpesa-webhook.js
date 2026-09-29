@@ -3,30 +3,49 @@
    Vercel Serverless Function.  POST /api/clickpesa-webhook
 
    ClickPesa calls this after a contribution succeeds or fails
-   (PAYMENT RECEIVED / PAYMENT FAILED). It is the only reliable
-   confirmation - the browser's own redirect back to the site can be
-   closed, lost, or skipped, so nothing here depends on that
-   happening.
+   (PAYMENT RECEIVED / PAYMENT FAILED), for both Hosted Checkout and
+   USSD-PUSH payments alike once registered as a merchant-level
+   webhook. It is the single reliable confirmation path - a visitor's
+   own browser session can be closed, lost, or never return, so
+   nothing here depends on that happening.
 
-   Set this exact URL as the Checkout Link's callbackUrl (already
-   wired in api/create-contribution.js) and, separately, in the
-   ClickPesa dashboard under Settings > Developers > Webhooks if a
-   merchant-level webhook is wanted too.
+   Register this exact URL in the ClickPesa dashboard under
+   Settings > Developers > Webhooks: https://idesign.co.tz/api/clickpesa-webhook
+   That registration is what was actually missing - a payment settled
+   on 2026-09-29 (reference BBMUMK5DKSZA705F) without this ever being
+   called, because no webhook was registered there. The per-request
+   callbackUrl on the Hosted Checkout flow (api/create-contribution.js)
+   is not a substitute for this.
+
+   PAYLOAD SHAPE - corrected against docs.clickpesa.com/home/webhooks,
+   September 2026. The event type and every payment field are nested
+   under "data", not flat on the body:
+     { "event": "PAYMENT RECEIVED", "data": { "status": "SUCCESS",
+       "orderReference": "...", "collectedAmount": "...", ... } }
+   The original version of this file assumed a flat body and never
+   actually found a real orderReference in a live payload - it looked
+   like it might be working (body.event happened to satisfy the
+   status check by accident) but silently failed to notify on every
+   real payment. Confirm this shape against current docs before
+   relying on it further, since payloads change.
 
    CHECKSUM VERIFICATION - NOT YET WIRED UP, DELIBERATELY.
    ClickPesa's webhook payload can carry a "checksum" and
-   "checksumMethod" for verifying it actually came from ClickPesa,
-   documented separately in their Checksum guide. That guide's exact
-   algorithm was not confirmed while building this - rather than
-   guess at a verification scheme and give false confidence, this
-   handler does NOT trust the payload blindly: it only acts on a
-   PAYMENT RECEIVED whose orderReference matches this project's own
-   "BB" + timestamp format, which a forged request would have to
-   guess. Read ClickPesa's Checksum documentation and add real
-   verification here before this handles amounts anyone would miss.
+   "checksumMethod" for verifying it actually came from ClickPesa.
+   Rather than guess at exactly how those apply to this payload shape
+   and give false confidence, this handler does NOT trust the payload
+   blindly: it only acts on a PAYMENT RECEIVED whose orderReference
+   matches this project's own "BB" + timestamp format, which a forged
+   request would have to guess. Add real checksum verification here
+   before this handles amounts anyone would miss.
 
-   RESEND_API_KEY is reused from api/contact.js to notify on a
-   successful contribution - no new secret needed.
+   This is the single place that sends the admin notification email -
+   api/check-contribution-status.js only reports status back to the
+   browser for the in-page UI, it does not also email, specifically
+   to avoid a duplicate email when both this webhook and that polling
+   endpoint observe the same successful payment.
+
+   RESEND_API_KEY is reused from api/contact.js - no new secret needed.
    ============================================================ */
 
 'use strict';
@@ -40,18 +59,20 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-async function notifyAdmin(payload) {
+async function notifyAdmin(data) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.error('clickpesa-webhook: RESEND_API_KEY not set, skipping notification email');
     return;
   }
-  const amount = payload.collectedAmount != null ? payload.collectedAmount : payload.amount;
-  const currency = payload.currency || 'TZS';
-  const ref = payload.orderReference || payload.reference || '(no reference)';
-  const channel = payload.paymentChannel || payload.channel || '';
-  const name = payload.customerName || '';
-  const email = payload.customerEmail || '';
+  const amount = data.collectedAmount != null ? data.collectedAmount : data.amount;
+  const currency = data.collectedCurrency || data.currency || 'TZS';
+  const ref = data.orderReference || '(no reference)';
+  const channel = data.channel || '';
+  const customer = data.customer || {};
+  const name = customer.customerName || '';
+  const email = customer.customerEmail || '';
+  const phone = customer.customerPhoneNumber || '';
 
   const text = [
     'A new Badili Bongo contribution came through.',
@@ -59,7 +80,7 @@ async function notifyAdmin(payload) {
     'Amount     : ' + amount + ' ' + currency,
     'Reference  : ' + ref,
     'Channel    : ' + (channel || '-'),
-    'From       : ' + (name || '-') + (email ? ' <' + email + '>' : ''),
+    'From       : ' + (name || '-') + (phone ? ' (' + phone + ')' : '') + (email ? ' <' + email + '>' : ''),
     '',
     'This is an automated notification from the ClickPesa webhook on idesign.co.tz.'
   ].join('\n');
@@ -70,7 +91,7 @@ async function notifyAdmin(payload) {
     'Badili Bongo &middot; contribution received</p>' +
     '<p><strong>' + escapeHtml(String(amount)) + ' ' + escapeHtml(currency) + '</strong></p>' +
     '<p style="color:#6B675F">Reference ' + escapeHtml(String(ref)) + (channel ? ' &middot; ' + escapeHtml(channel) : '') + '</p>' +
-    (name || email ? '<p>From ' + escapeHtml(name) + (email ? ' &lt;' + escapeHtml(email) + '&gt;' : '') + '</p>' : '') +
+    (name || phone || email ? '<p>From ' + escapeHtml(name) + (phone ? ' (' + escapeHtml(phone) + ')' : '') + (email ? ' &lt;' + escapeHtml(email) + '&gt;' : '') + '</p>' : '') +
     '</div>';
 
   try {
@@ -108,22 +129,26 @@ module.exports = async function handler(req, res) {
   }
   if (!body || typeof body !== 'object') body = {};
 
-  const status = String(body.status || body.event || '').toUpperCase();
-  const ref = String(body.orderReference || body.reference || '');
+  /* "data" carries the actual payment fields; fall back to the body
+     itself in case a differently-shaped event ever lands here. */
+  const data = (body.data && typeof body.data === 'object') ? body.data : body;
+  const event = String(body.event || '').toUpperCase();
+  const status = String(data.status || event || '').toUpperCase();
+  const ref = String(data.orderReference || '');
 
   /* Always acknowledge with 2xx - ClickPesa's docs are explicit that
      this only confirms delivery, not processing, and a non-2xx here
      just causes pointless retries of an event we've already logged. */
-  console.log('clickpesa-webhook: received status=' + status + ' ref=' + ref);
+  console.log('clickpesa-webhook: received event=' + event + ' status=' + status + ' ref=' + ref);
 
-  if (status.indexOf('SUCCESS') !== -1 || status.indexOf('RECEIVED') !== -1) {
+  if (status.indexOf('SUCCESS') !== -1 || status.indexOf('RECEIVED') !== -1 || status === 'SETTLED') {
     if (OWN_REFERENCE_RE.test(ref)) {
-      await notifyAdmin(body);
+      await notifyAdmin(data);
     } else {
       console.error('clickpesa-webhook: PAYMENT RECEIVED with an unrecognised reference, not notifying: ' + ref);
     }
   } else if (status.indexOf('FAIL') !== -1) {
-    console.log('clickpesa-webhook: payment failed ref=' + ref + ' reason=' + (body.failureReason || body.reason || 'unspecified'));
+    console.log('clickpesa-webhook: payment failed ref=' + ref + ' reason=' + (data.message || 'unspecified'));
   }
 
   return res.status(200).json({ ok: true });

@@ -27,9 +27,13 @@
        the checkout-link endpoint's docs said the same thing and it
        turned out to be required in practice - sent unconditionally
        here to avoid repeating that discovery.
-     - Confirmation is via polling api/check-contribution-status.js,
-       not a callbackUrl - this endpoint's request body has no such
-       field. See that file for why.
+     - This endpoint's request body has no callbackUrl field, unlike
+       checkout-link's. The frontend confirms status by polling
+       api/check-contribution-status.js. The admin notification email
+       comes separately from api/clickpesa-webhook.js, once a
+       merchant-level webhook is registered in the ClickPesa dashboard
+       (Settings > Developers > Webhooks) - that covers USSD-PUSH
+       payments too, not just Hosted Checkout.
    ============================================================ */
 
 'use strict';
