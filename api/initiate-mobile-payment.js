@@ -125,13 +125,6 @@ module.exports = async function handler(req, res) {
     console.error('initiate-mobile-payment: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY / CLICKPESA_CHECKSUM_KEY not set');
     return res.status(500).json({ ok: false });
   }
-  /* TEMPORARY DIAGNOSTIC - server-side log only, never in the HTTP
-     response. First 4 and last 4 characters of the Client ID only,
-     to compare against the Application ID shown in the ClickPesa
-     dashboard without exposing the full value anywhere. Remove once
-     the COLLECTION_API access issue is confirmed resolved. */
-  console.log('initiate-mobile-payment: using clientId ' +
-    clientId.slice(0, 4) + '...' + clientId.slice(-4) + ' (len ' + clientId.length + ')');
 
   let body = req.body;
   if (typeof body === 'string') {
