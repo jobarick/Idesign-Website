@@ -8,10 +8,12 @@
    a card number, wallet PIN, or any payment credential - ClickPesa's
    hosted page owns the entire payment step.
 
-   CLICKPESA_CLIENT_ID and CLICKPESA_API_KEY are read from the
-   environment and never leave the server, for the same reason
-   RESEND_API_KEY doesn't in api/contact.js: every file under the
-   site root is publicly downloadable.
+   CLICKPESA_CLIENT_ID, CLICKPESA_API_KEY and CLICKPESA_CHECKSUM_KEY
+   are read from the environment and never leave the server, for the
+   same reason RESEND_API_KEY doesn't in api/contact.js: every file
+   under the site root is publicly downloadable. The checksum key is
+   a separate secret from the Client ID/API Key pair - found in the
+   ClickPesa merchant dashboard, not the same place as those two.
 
    No npm dependency: ClickPesa is called over its REST API using
    the runtime's built-in fetch, matching api/contact.js.
@@ -34,8 +36,27 @@
 
 'use strict';
 
+const crypto = require('crypto');
+
 const TOKEN_URL = 'https://api.clickpesa.com/third-parties/generate-token';
 const CHECKOUT_URL = 'https://api.clickpesa.com/third-parties/checkout-link/generate-checkout-url';
+
+/* Per docs.clickpesa.com/home/checksum.md: recursively sort object
+   keys, stringify with no whitespace, HMAC-SHA256 with the merchant's
+   checksum key, hex-encode. Order-independent by design. */
+function canonicalize(value) {
+  if (value === null || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map(canonicalize);
+  return Object.keys(value).sort().reduce(function (acc, key) {
+    acc[key] = canonicalize(value[key]);
+    return acc;
+  }, {});
+}
+function checksumFor(checksumKey, payload) {
+  const hmac = crypto.createHmac('sha256', checksumKey);
+  hmac.update(JSON.stringify(canonicalize(payload)));
+  return hmac.digest('hex');
+}
 
 /* Round-number guardrails, not a claim about what's "right" to give.
    MIN stops accidental near-zero submissions; MAX stops a typo (or
@@ -88,8 +109,9 @@ module.exports = async function handler(req, res) {
 
   const clientId = process.env.CLICKPESA_CLIENT_ID;
   const apiKey = process.env.CLICKPESA_API_KEY;
-  if (!clientId || !apiKey) {
-    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY not set');
+  const checksumKey = process.env.CLICKPESA_CHECKSUM_KEY;
+  if (!clientId || !apiKey || !checksumKey) {
+    console.error('create-contribution: CLICKPESA_CLIENT_ID / CLICKPESA_API_KEY / CLICKPESA_CHECKSUM_KEY not set');
     return res.status(500).json({ ok: false });
   }
 
@@ -145,6 +167,10 @@ module.exports = async function handler(req, res) {
     };
     if (name) checkoutBody.customerName = name;
     if (email) checkoutBody.customerEmail = email;
+    /* Computed over the body above, before adding the checksum field
+       itself - checksum/checksumMethod are excluded from their own
+       computation per ClickPesa's docs. */
+    checkoutBody.checksum = checksumFor(checksumKey, checkoutBody);
 
     const checkoutResp = await fetch(CHECKOUT_URL, {
       method: 'POST',
