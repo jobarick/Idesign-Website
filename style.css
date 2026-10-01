@@ -215,6 +215,11 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
    The descriptor was previously 14px bold, competing with the
    larger tagline directly beneath it. */
 .bh{padding:var(--s7) 0;border-bottom:var(--hair)}
+/* Badili Bongo's hero runs straight into a heading-led section next
+   (no image break like most other pages have there), so the usual
+   bottom padding reads as excess air before "How the children make
+   a film" - tightened here only, not sitewide. */
+.bh--tight{padding-bottom:var(--s5)}
 .own{color:var(--soft);margin-bottom:var(--s4)}
 .bh .nm{font-family:var(--wm);font-weight:700;font-size:var(--fs-title);
   letter-spacing:var(--tr-title);line-height:var(--lh-tight)}
@@ -260,8 +265,8 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .step .k{display:block;font-family:var(--wm);font-weight:700;
   font-size:var(--fs-meta);color:var(--soft);letter-spacing:.08em}
 .step .h{display:block;font-family:var(--wm);font-weight:700;
-  font-size:var(--fs-lead);letter-spacing:var(--tr-row);
-  line-height:var(--lh-tight);margin-top:var(--s4)}
+  font-size:var(--fs-body);letter-spacing:var(--tr-row);
+  line-height:var(--lh-tight);margin-top:var(--s3)}
 .step .p{display:block;font-size:var(--fs-caption);color:var(--soft);
   line-height:var(--lh-body);margin-top:var(--s2)}
 .steps-end{font-size:var(--fs-meta);color:var(--soft);margin-top:var(--s5)}
@@ -441,7 +446,7 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
   /* Steps fold into a numbered list — never a part-filled grid. */
   .steps{grid-template-columns:1fr;gap:0}
   .step{display:grid;grid-template-columns:var(--s6) 1fr;gap:var(--s4);
-    border-top:none;border-bottom:var(--hair);padding:var(--s4) 0;
+    border-top:none;border-bottom:var(--hair);padding:var(--s3) 0;
     align-items:baseline}
   .step:first-child{border-top:1px solid var(--ink)}
   .step .h{margin-top:0}
