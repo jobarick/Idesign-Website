@@ -197,6 +197,18 @@ module.exports = async function handler(req, res) {
       return res.status(502).json({ ok: false });
     }
     const pushData = await pushResp.json();
+    /* Whitelisted fields only - never the token, keys, checksum or phone. */
+    console.log('initiate-mobile-payment: initiate-ussd-push-request ' + pushResp.status + ' ' + JSON.stringify({
+      at: new Date().toISOString(),
+      id: pushData && pushData.id,
+      status: pushData && pushData.status,
+      message: pushData && pushData.message,
+      channel: pushData && pushData.channel,
+      orderReference: (pushData && pushData.orderReference) || ref,
+      collectedAmount: pushData && pushData.collectedAmount,
+      collectedCurrency: pushData && pushData.collectedCurrency,
+      createdAt: pushData && pushData.createdAt
+    }));
 
     return res.status(200).json({
       ok: true,
