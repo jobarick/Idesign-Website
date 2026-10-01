@@ -289,10 +289,11 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .txt p{margin-bottom:var(--s4)}
 .txt p:last-child{margin-bottom:0}
 
-/* ---------- STORY (collapsible on mobile, open on desktop) ----------
-   Mobile: short teaser + a toggle reveals the full story below it.
-   Desktop (900px+): the teaser and toggle are never shown - the full
-   story is simply part of the page, same as everything else on it. */
+/* ---------- STORY (collapsible everywhere) ----------
+   Short teaser + a toggle reveals the full content below it, on
+   every viewport - mobile portrait and desktop landscape alike.
+   Less information up front by default; "Read more" is the only way
+   to see the rest, regardless of screen size. */
 .story{max-width:56ch}
 .story-short{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--mid)}
 .story-full{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--mid);margin-top:var(--s4)}
@@ -314,10 +315,6 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .story-toggle:hover{color:var(--soft)}
 .story-toggle span[aria-hidden]{transition:transform var(--dur) var(--ease)}
 .story-toggle[aria-expanded="true"] span[aria-hidden]{transform:rotate(90deg)}
-@media(min-width:901px){
-  .story-short,.story-toggle{display:none}
-  .story-full{display:block !important;margin-top:0}
-}
 
 /* Client names as a credit line, not a sentence: set in the same
    display face as the homepage's own company index (.row .nm), so
