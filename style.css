@@ -335,9 +335,10 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 /* Payment-method toggle inside the contribute form reuses .lang's
    look (same underlined-text-button language), but needs visible
    borders here since it's standing alone rather than in the header. */
-.fd .lang{margin-right:0;gap:var(--s2)}
+.fd .lang{margin-right:0;gap:var(--s2);flex-wrap:wrap}
 .fd .lang button{border:var(--hair);border-radius:var(--radius);
-  padding:var(--s2) var(--s4);min-height:var(--tap)}
+  padding:var(--s3) var(--s4);min-height:var(--tap);
+  text-transform:uppercase;letter-spacing:.1em}
 .fd .lang button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .fd .lang button:hover{border-color:var(--ink)}
 
