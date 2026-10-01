@@ -424,3 +424,45 @@
     });
   });
 })();
+
+/* ============================================================
+   Story read-more toggle (badili-bongo.html).
+   Collapsed by default on mobile, where CSS shows the short teaser
+   and this toggle; desktop (901px+) shows the full story directly
+   and CSS hides this toggle entirely, so this script has nothing to
+   do there. The toggle's own label is a [data-en]/[data-sw] node
+   like any other, so the language switcher above keeps working on
+   it - this only ever changes WHICH pair of strings that node reads
+   from, not how it gets translated.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var toggle = document.getElementById('story-toggle');
+  var full = document.getElementById('story-full');
+  if (!toggle || !full) return;
+
+  var label = toggle.querySelector('[data-en]');
+
+  function lang() {
+    try { return localStorage.getItem('idesign-lang') === 'sw' ? 'sw' : 'en'; }
+    catch (e) { return 'en'; }
+  }
+
+  toggle.addEventListener('click', function () {
+    var expanded = toggle.getAttribute('aria-expanded') === 'true';
+    var next = !expanded;
+    toggle.setAttribute('aria-expanded', String(next));
+    full.hidden = !next;
+
+    if (label) {
+      var en = next ? toggle.getAttribute('data-en-less') : toggle.getAttribute('data-en-more');
+      var sw = next ? toggle.getAttribute('data-sw-less') : toggle.getAttribute('data-sw-more');
+      label.setAttribute('data-en', en);
+      label.setAttribute('data-sw', sw);
+      label.textContent = lang() === 'sw' ? sw : en;
+    }
+
+    if (!next) full.scrollIntoView({ block: 'nearest' });
+  });
+})();

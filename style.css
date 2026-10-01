@@ -289,6 +289,34 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .txt p{margin-bottom:var(--s4)}
 .txt p:last-child{margin-bottom:0}
 
+/* ---------- STORY (collapsible on mobile, open on desktop) ----------
+   Mobile: short teaser + a toggle reveals the full story below it.
+   Desktop (900px+): the teaser and toggle are never shown - the full
+   story is simply part of the page, same as everything else on it. */
+.story{max-width:56ch}
+.story-short{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--mid)}
+.story-full{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--mid);margin-top:var(--s4)}
+.story-full h3{font-size:var(--fs-label);font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink);margin-bottom:var(--s4)}
+.story-full p{margin-bottom:var(--s4)}
+.story-full p:last-of-type{margin-bottom:0}
+.story-journey{font-size:var(--fs-meta);color:var(--soft);letter-spacing:.02em;
+  margin-top:var(--s5);padding-top:var(--s4);border-top:var(--hair)}
+.story-partners{margin-top:var(--s5)}
+.story-partners-lbl{display:block;font-size:var(--fs-label);font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--soft);margin-bottom:var(--s2)}
+.story-partners-list{font-size:var(--fs-meta);color:var(--soft)}
+.story-toggle{display:inline-flex;align-items:center;gap:var(--s2);
+  margin-top:var(--s4);min-height:var(--tap);background:none;border:none;
+  cursor:pointer;font-family:var(--sans);font-size:var(--fs-meta);font-weight:600;
+  letter-spacing:.05em;color:var(--ink);padding:0;
+  border-bottom:1px solid var(--ink)}
+.story-toggle:hover{color:var(--soft);border-color:var(--soft)}
+@media(min-width:901px){
+  .story-short,.story-toggle{display:none}
+  .story-full{display:block !important;margin-top:0}
+}
+
 /* Client names as a credit line, not a sentence: set in the same
    display face as the homepage's own company index (.row .nm), so
    the studio's work and its own divisions read as one family rather
