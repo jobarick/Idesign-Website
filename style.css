@@ -325,12 +325,21 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
    not a filled "primary" button, so it doesn't invent a new
    component just for this one form. */
 .amounts{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.amt{font-family:var(--sans);font-size:var(--fs-meta);font-weight:600;
+.amt,.amt-usd{font-family:var(--sans);font-size:var(--fs-meta);font-weight:600;
   color:var(--ink);background:none;border:var(--hair);border-radius:var(--radius);
   padding:var(--s2) var(--s4);min-height:var(--tap);cursor:pointer;
   transition:background-color var(--dur) var(--ease),color var(--dur) var(--ease)}
-.amt:hover{border-color:var(--ink)}
-.amt.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.amt:hover,.amt-usd:hover{border-color:var(--ink)}
+.amt.on,.amt-usd.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* Payment-method toggle inside the contribute form reuses .lang's
+   look (same underlined-text-button language), but needs visible
+   borders here since it's standing alone rather than in the header. */
+.fd .lang{margin-right:0;gap:var(--s2)}
+.fd .lang button{border:var(--hair);border-radius:var(--radius);
+  padding:var(--s2) var(--s4);min-height:var(--tap)}
+.fd .lang button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.fd .lang button:hover{border-color:var(--ink)}
 
 /* Contact form result. One line, in the existing type scale;
    colour only shifts between quiet and ink so the monochrome

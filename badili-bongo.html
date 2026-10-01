@@ -121,34 +121,74 @@
     </div>
     <form id="contribute" novalidate>
       <p class="hp"><label>Do not fill this in <input name="company-website" tabindex="-1" autocomplete="off"></label></p>
+
       <div class="fd">
-        <label data-en="Choose an amount (TZS)" data-sw="Chagua kiasi (TZS)">Choose an amount (TZS)</label>
-        <div class="amounts" role="group" aria-label="Suggested amounts">
-          <button type="button" class="amt" data-amount="10000">10,000</button>
-          <button type="button" class="amt" data-amount="25000">25,000</button>
-          <button type="button" class="amt" data-amount="50000">50,000</button>
-          <button type="button" class="amt" data-amount="100000">100,000</button>
+        <label data-en="How you'd like to pay" data-sw="Jinsi unavyotaka kulipa">How you'd like to pay</label>
+        <div class="lang" role="group" aria-label="Payment method">
+          <button type="button" class="on" data-method="mobile" data-en="Tanzania (Mobile Money)" data-sw="Tanzania (Pesa ya Simu)">Tanzania (Mobile Money)</button>
+          <button type="button" data-method="card" data-en="International (Card)" data-sw="Kimataifa (Kadi)">International (Card)</button>
         </div>
       </div>
-      <div class="fd">
-        <label for="c-amount" data-en="Or enter your own amount (TZS)" data-sw="Au weka kiasi chako (TZS)">Or enter your own amount (TZS)</label>
-        <input id="c-amount" name="amount" type="number" min="1000" step="500" inputmode="numeric" required>
+
+      <div data-method-panel="mobile">
+        <div class="fd">
+          <label data-en="Choose an amount (TZS)" data-sw="Chagua kiasi (TZS)">Choose an amount (TZS)</label>
+          <div class="amounts" role="group" aria-label="Suggested amounts">
+            <button type="button" class="amt" data-amount="10000">10,000</button>
+            <button type="button" class="amt" data-amount="25000">25,000</button>
+            <button type="button" class="amt" data-amount="50000">50,000</button>
+            <button type="button" class="amt" data-amount="100000">100,000</button>
+          </div>
+        </div>
+        <div class="fd">
+          <label for="c-amount" data-en="Or enter your own amount (TZS)" data-sw="Au weka kiasi chako (TZS)">Or enter your own amount (TZS)</label>
+          <input id="c-amount" name="amount" type="number" min="1000" step="500" inputmode="numeric">
+        </div>
+        <div class="fd">
+          <label for="c-phone" data-en="Phone number (for the mobile money prompt)" data-sw="Namba ya simu (kwa ombi la pesa ya simu)">Phone number (for the mobile money prompt)</label>
+          <input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX">
+        </div>
+        <div class="fd">
+          <label for="c-name" data-en="Name (optional)" data-sw="Jina (hiari)">Name (optional)</label>
+          <input id="c-name" name="name" type="text" autocomplete="name">
+        </div>
+        <div class="fd">
+          <label for="c-email" data-en="Email (optional, for a receipt)" data-sw="Barua pepe (hiari, kwa risiti)">Email (optional, for a receipt)</label>
+          <input id="c-email" name="email" type="email" autocomplete="email">
+        </div>
       </div>
-      <div class="fd">
-        <label for="c-phone" data-en="Phone number (for the mobile money prompt)" data-sw="Namba ya simu (kwa ombi la pesa ya simu)">Phone number (for the mobile money prompt)</label>
-        <input id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="07XX XXX XXX" required>
+
+      <div data-method-panel="card" hidden>
+        <div class="fd">
+          <label data-en="Choose an amount (USD)" data-sw="Chagua kiasi (USD)">Choose an amount (USD)</label>
+          <div class="amounts" role="group" aria-label="Suggested amounts">
+            <button type="button" class="amt-usd" data-amount="5">5</button>
+            <button type="button" class="amt-usd" data-amount="10">10</button>
+            <button type="button" class="amt-usd" data-amount="25">25</button>
+            <button type="button" class="amt-usd" data-amount="50">50</button>
+          </div>
+        </div>
+        <div class="fd">
+          <label for="c-amount-usd" data-en="Or enter your own amount (USD)" data-sw="Au weka kiasi chako (USD)">Or enter your own amount (USD)</label>
+          <input id="c-amount-usd" name="amount-usd" type="number" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="fd">
+          <label for="c-name-intl" data-en="Full name" data-sw="Jina kamili">Full name</label>
+          <input id="c-name-intl" name="name-intl" type="text" autocomplete="name">
+        </div>
+        <div class="fd">
+          <label for="c-email-intl" data-en="Email (for your receipt)" data-sw="Barua pepe (kwa risiti yako)">Email (for your receipt)</label>
+          <input id="c-email-intl" name="email-intl" type="email" autocomplete="email">
+        </div>
+        <div class="fd">
+          <label for="c-phone-intl" data-en="Phone number" data-sw="Namba ya simu">Phone number</label>
+          <input id="c-phone-intl" name="phone-intl" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 123 4567">
+        </div>
       </div>
-      <div class="fd">
-        <label for="c-name" data-en="Name (optional)" data-sw="Jina (hiari)">Name (optional)</label>
-        <input id="c-name" name="name" type="text" autocomplete="name">
-      </div>
-      <div class="fd">
-        <label for="c-email" data-en="Email (optional, for a receipt)" data-sw="Barua pepe (hiari, kwa risiti)">Email (optional, for a receipt)</label>
-        <input id="c-email" name="email" type="email" autocomplete="email">
-      </div>
+
       <button class="btn" type="submit" data-en="Send payment request" data-sw="Tuma ombi la malipo">Send payment request</button>
       <p id="c-status" class="fstat" role="status" aria-live="polite"></p>
-      <p class="note" data-en="Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it." data-sw="Malipo yanashughulikiwa na ClickPesa, iliyosajiliwa chini ya Benki Kuu ya Tanzania. Ombi litafika kwenye simu yako kuweka PIN yako ya pesa ya simu. Idesign haioni wala kuihifadhi.">Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it.</p>
+      <p class="note" id="c-note" data-en="Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it." data-sw="Malipo yanashughulikiwa na ClickPesa, iliyosajiliwa chini ya Benki Kuu ya Tanzania. Ombi litafika kwenye simu yako kuweka PIN yako ya pesa ya simu. Idesign haioni wala kuihifadhi.">Payment is handled by ClickPesa, licensed under the Bank of Tanzania. A prompt will arrive on your phone to enter your mobile money PIN. Idesign never sees or stores it.</p>
     </form>
   </div>
   <div>
