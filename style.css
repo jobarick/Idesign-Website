@@ -366,6 +366,7 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .fd .lang{margin-right:0;gap:var(--s2);flex-wrap:wrap}
 .fd .lang button{border:var(--hair);border-radius:var(--radius);
   padding:var(--s3) var(--s4);min-height:var(--tap);
+  font-size:var(--fs-meta);font-weight:700;
   text-transform:uppercase;letter-spacing:.1em}
 .fd .lang button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .fd .lang button:hover{border-color:var(--ink)}
