@@ -1,3 +1,5 @@
 # Netlify redirects
+/api/initiate-mobile-payment    /.netlify/functions/initiate-mobile-payment    200
+/api/check-contribution-status  /.netlify/functions/check-contribution-status  200
 /home    /    301
 /index   /    301

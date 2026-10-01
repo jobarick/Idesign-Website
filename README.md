@@ -54,6 +54,8 @@ Many businesses buy both and redirect one to the other. If you do, make `.co.tz`
 
 `netlify.toml` and `_redirects` are already set up with security headers and caching. The contact form works automatically — Netlify catches submissions and emails them to you. No server needed.
 
+For the Badili Bongo mobile-money form, add these environment variables in Netlify under **Project configuration -> Environment variables**: `CLICKPESA_CLIENT_ID`, `CLICKPESA_API_KEY` and `CLICKPESA_CHECKSUM_KEY`. The payment API functions are included under `netlify/functions/` and the existing `/api/...` URLs are routed to them.
+
 Alternatives: **Cloudflare Pages** (also free, faster in Africa) or **Vercel**. Any normal web host with FTP works too — just upload the files.
 
 ### 3. Point the domain at the site
