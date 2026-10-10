@@ -32,6 +32,12 @@
       var p = attrNodes[j].getAttribute('data-' + l + '-placeholder');
       if (p !== null) attrNodes[j].setAttribute('placeholder', p);
     }
+    // screen reader labels follow the language as well
+    var ariaNodes = document.querySelectorAll('[data-en-aria]');
+    for (var k = 0; k < ariaNodes.length; k++) {
+      var a = ariaNodes[k].getAttribute('data-' + l + '-aria');
+      if (a !== null) ariaNodes[k].setAttribute('aria-label', a);
+    }
 
     var en = document.getElementById('b-en');
     var sw = document.getElementById('b-sw');
@@ -55,8 +61,11 @@
     if (!t) t = s.getAttribute('data-plain') || s.textContent;
     t = t.replace(/&middot;/g, '\u00B7').trim();
     s.setAttribute('data-plain', t);
-    s.setAttribute('aria-label', t);
-    var out = '';
+    // aria-label on a paragraph is not reliably announced, so the readable
+    // text sits in a visually hidden span and the spaced letters stay hidden
+    s.removeAttribute('aria-label');
+    var safe = t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    var out = '<span class="vh">' + safe + '</span>';
     for (var i = 0; i < t.length; i++) {
       out += (t.charAt(i) === ' ')
         ? '<span class="sp" aria-hidden="true"></span>'
@@ -96,6 +105,14 @@
 
   var form = document.getElementById('enquiry');
   if (!form) return;
+
+  // Arriving from a studio page (/contact?to=landscape) pre-selects that
+  // studio, so the visitor does not have to choose it a second time.
+  try {
+    var to = (new URLSearchParams(window.location.search).get('to') || '').replace(/[^a-z]/g, '');
+    var dept = form.querySelector('select[name="department"]');
+    if (to && dept && dept.querySelector('option[value="' + to + '"]')) dept.value = to;
+  } catch (e) { /* older browser: the visitor simply chooses */ }
 
   var status = document.getElementById('f-status');
   var button = form.querySelector('button[type="submit"]');
@@ -219,7 +236,7 @@
     paid:        { en: 'Thank you. Your contribution has been received.', sw: 'Asante. Mchango wako umepokelewa.' },
     failed:      { en: 'The payment did not go through. Please try again.', sw: 'Malipo hayakufanikiwa. Tafadhali jaribu tena.' },
     timeout:     { en: 'Still waiting to hear back. If you already paid, give it a moment and check again.', sw: 'Bado tunasubiri jibu. Kama tayari umelipa, subiri kidogo kisha angalia tena.' },
-    fail:        { en: 'We could not send the payment request. Please try again.', sw: 'Hatukuweza kutuma ombi la malipo. Tafadhali jaribu tena.' },
+    fail:        { en: 'We could not send the payment request. Please try again in a few minutes, or reach us on WhatsApp +255 682 371 771 and we will help you give another way.', sw: 'Hatukuweza kutuma ombi la malipo. Tafadhali jaribu tena baada ya dakika chache, au tuandikie WhatsApp +255 682 371 771 tukusaidie kuchangia kwa njia nyingine.' },
     invalid:     { en: 'Please enter an amount of at least 1,000 TZS and a valid phone number.', sw: 'Tafadhali weka kiasi cha angalau TZS 1,000 na namba sahihi ya simu.' },
     invalidCard: { en: 'Please enter a valid amount, full name, email and phone number.', sw: 'Tafadhali weka kiasi sahihi, jina kamili, barua pepe na namba ya simu.' }
   };
@@ -473,5 +490,59 @@
         if (!next) full.scrollIntoView({ block: 'nearest' });
       });
     })(toggles[i]);
+  }
+})();
+
+/* Lightbox: the grid crops every image to 4:3, which cuts wide renders
+   and tall posters badly. A button over each image opens it whole. */
+(function () {
+  // linked tiles (the YouTube films) keep their link, so only plain images
+  var imgs = [].filter.call(document.querySelectorAll('.grid .it .ph img'), function (im) { return !im.closest('a'); });
+  if (!imgs.length || typeof HTMLDialogElement !== 'function') return;
+
+  function sw() { var b = document.getElementById('b-sw'); return b && b.getAttribute('aria-pressed') === 'true'; }
+
+  var dlg = document.createElement('dialog');
+  dlg.className = 'lb';
+  dlg.innerHTML = '<figure><picture><source type="image/webp"><img alt=""></picture><figcaption><div><span class="cap"></span> <span class="sc"></span></div>' +
+    '<button type="button" class="lb-x"></button></figcaption></figure>';
+  document.body.appendChild(dlg);
+  var bigSrc = dlg.querySelector('source');
+  var big = dlg.querySelector('img'), cap = dlg.querySelector('.cap'), sc = dlg.querySelector('.sc'), x = dlg.querySelector('.lb-x');
+
+  x.addEventListener('click', function () { dlg.close(); });
+  // a click on the backdrop lands on the dialog itself
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('close', function () { big.removeAttribute('src'); bigSrc.removeAttribute('srcset'); });
+
+  for (var i = 0; i < imgs.length; i++) {
+    (function (img) {
+      var it = img.closest('.it');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ph-open';
+      function label() {
+        btn.setAttribute('aria-label', (sw() ? 'Tazama picha nzima: ' : 'View full image: ') + img.alt);
+      }
+      label();
+      btn.addEventListener('focus', label);
+      btn.addEventListener('mouseenter', label);
+      btn.addEventListener('click', function () {
+        // let the dialog pick WebP or the original the same way the grid does,
+        // even when the lazy grid image has not loaded yet
+        var s0 = img.parentNode.querySelector('source');
+        if (s0) bigSrc.setAttribute('srcset', s0.getAttribute('srcset')); else bigSrc.removeAttribute('srcset');
+        big.src = img.getAttribute('src');
+        big.alt = img.alt;
+        var c = it.querySelector('.cap'), s = it.querySelector('.sc');
+        cap.textContent = c ? c.textContent : '';
+        sc.textContent = s ? s.textContent : '';
+        x.textContent = sw() ? 'Funga' : 'Close';
+        dlg.showModal();
+        x.focus();
+      });
+      var ph = img.closest('.ph');
+      ph.insertBefore(btn, ph.firstChild);
+    })(imgs[i]);
   }
 })();
