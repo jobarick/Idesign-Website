@@ -183,6 +183,9 @@ header{position:sticky;top:0;z-index:50;background:rgba(251,250,248,.93);
   font-size:clamp(11px,1.45vw,15px);font-weight:700;text-transform:uppercase;
   color:var(--ink);margin-top:var(--s3);letter-spacing:0;line-height:1}
 .top .strap .sp{flex:0 0 .34em}
+/* Visually hidden, still read by screen readers (used for the strapline). */
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 
 .index{border-top:var(--hair)}
 .row{display:grid;grid-template-columns:var(--s6) 1fr auto;gap:var(--s5);
@@ -249,6 +252,7 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .grid--wide{grid-template-columns:repeat(2,1fr)}
 .ph{aspect-ratio:4/3;background:var(--fill);border:var(--hair);
   display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ph picture{display:block;width:100%;height:100%}
 .ph img{width:100%;height:100%;object-fit:cover}
 .ph i{font-style:normal;font-size:var(--fs-label);color:var(--soft)}
 .media-link{display:block}
@@ -517,3 +521,25 @@ footer{padding:var(--s6) 0 var(--s7);font-size:var(--fs-caption);
 @media(prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* ---------- LIGHTBOX ----------
+   Project images are cropped to 4:3 in the grid. Tapping one opens
+   the whole, uncropped image with its caption. Native <dialog>, so
+   Esc, focus trapping and the backdrop come from the browser. */
+.ph{position:relative}
+.ph-open{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;
+  background:transparent;cursor:zoom-in}
+.ph-open:hover + img,.ph:hover img{opacity:.92}
+.lb{border:0;padding:0;margin:auto;max-width:min(1200px,94vw);max-height:94vh;
+  background:var(--paper);color:var(--ink)}
+.lb::backdrop{background:rgba(17,17,16,.88)}
+.lb figure{margin:0;display:flex;flex-direction:column}
+.lb picture{display:block}
+.lb img{display:block;max-width:100%;max-height:calc(94vh - 72px);width:auto;height:auto;
+  margin:0 auto;object-fit:contain;background:var(--fill)}
+.lb figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);
+  padding:var(--s3) var(--s4);border-top:var(--hair)}
+.lb .cap{font-size:var(--fs-meta);font-weight:500}
+.lb .sc{font-size:var(--fs-caption);color:var(--soft);margin-left:var(--s3)}
+.lb-x{flex:none;background:none;border:0;padding:var(--s1) 0;font:inherit;
+  font-size:var(--fs-label);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);cursor:pointer}
