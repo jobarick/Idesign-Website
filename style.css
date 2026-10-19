@@ -254,6 +254,7 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
   display:flex;align-items:center;justify-content:center;overflow:hidden}
 .ph picture{display:block;width:100%;height:100%}
 .ph img{width:100%;height:100%;object-fit:cover}
+.ph img.ph-top{object-position:50% 0}
 .ph i{font-style:normal;font-size:var(--fs-label);color:var(--soft)}
 .media-link{display:block}
 .media-link:hover .ph img{opacity:.85}
