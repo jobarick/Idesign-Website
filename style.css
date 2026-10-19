@@ -240,6 +240,7 @@ section{padding:var(--section-y) 0;border-bottom:var(--hair)}
 .lst li{padding:var(--s4) 0;border-bottom:var(--hair);
   display:grid;grid-template-columns:1fr auto;gap:var(--s5);align-items:baseline}
 .lst li:last-child{border-bottom:none;padding-bottom:0}
+.lst + .txt{margin-top:var(--s5)}
 .lst li .t{color:var(--ink);font-size:var(--fs-body)}
 /* Meta reads as a taxonomy tag rather than a word competing with
    the service name beside it. */
